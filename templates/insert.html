@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block main_content %}
+<h1>Insert Movie</h1>
+
+<form method="POST">
+    <label for = "movie-tt">Movie ID/TT: </label>
+    <input type = "text" id = "movie-tt" name = "movie-tt">
+    <br>
+    <label for = "movie-title">Movie Title: </label>
+    <input type = "text" id = "movie-title" name = "movie-title">
+    <br>
+    <label for = "movie-release">Movie Release Year: </label>
+    <input type = "text" id = "movie-release" name = "movie-release">
+    <br>
+    <button type = 'submit'>Submit</button>
+</form>
+
+{% endblock %}

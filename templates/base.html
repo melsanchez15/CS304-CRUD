@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang='en'>
+<head>
+    <meta charset='utf-8'>
+    <!-- for mobile-friendly pages -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name=author content="">
+    <title>{{ page_title }}</title>
+    <link rel='stylesheet' href="{{url_for('static', filename = 'style.css')}}">
+    {% block head_stuff %} {% endblock %}
+</head>
+<body>
+            
+{% block main_content %}
+<ul>
+<li><a href="{{url_for('index')}}">Home</a></li>
+<li><a href="{{url_for('insert')}}">Insert A Movie</a></li>
+<li><a href="{{url_for('select')}}">Select from incomplete Movies</a></li>
+</ul>
+
+<h1>Home</h1>
+{% endblock %}
+  
+</body>
+</html>

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block main_content %}
+<h1>Update Movie</h1>
+
+<p>Use "None" or "null" to set a field to null. Only Title, Release Year and Director can be null.</p>
+
+<form action = "/select/tt" method = "POST">
+    <label for = "movie-tt">Movie ID/TT: </label>
+    <input type = "text" id = "movie-tt" name = "movie-tt">
+    <br>
+    <label for = "movie-title">Movie Title: </label>
+    <input type = "text" id = "movie-title" name = "movie-title">
+    <br>
+    <label for = "movie-release">Movie Release Year: </label>
+    <input type = "text" id = "movie-release" name = "movie-release">
+    <br>
+    <label for = "movie-director">Movie Director: </label>
+    <input type = "text" id = "movie-director" name = "movie-director">
+    <br>
+    <label for = "movie-addedby">Movie Added By: </label>
+    <input type = "text" id = "movie-addedby" name = "movie-addedby">
+    <br>
+    <button type = 'submit'>Update</button>
+    <button type = 'submit'>Delete</button>
+</form>
+
+{% endblock %}
