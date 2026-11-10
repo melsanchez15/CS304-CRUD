@@ -4,6 +4,7 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 
 import secrets
+import pymysql
 import cs304dbi as dbi
 
 # we need a secret_key to use flash() and sessions
@@ -20,7 +21,7 @@ app.config['TRAP_BAD_REQUEST_ERRORS'] = True
 @app.route('/')
 def index():
     return render_template('base.html', page_title='Home Page')
-
+#adds, add flash message and check if it would create duplicate tt
 @app.route('/insert/', methods = ['POST', 'GET'])
 def insert():
     conn = dbi.connect()
@@ -29,7 +30,11 @@ def insert():
         ttform = request.form.get('movie-tt')
         titleform = request.form.get('movie-title')
         releaseform = request.form.get('movie-release')
-        curs.execute('''INSERT INTO movie (tt, title, `release`) VALUES (%s, %s, %s)''',[ttform, titleform, releaseform])
+        try:
+            curs.execute('''INSERT INTO movie (tt, title, `release`) VALUES (%s, %s, %s)''',[ttform, titleform, releaseform])
+        except pymysql.err.IntegrityError as err:
+            flash(f'There is an existing movie with that tt value of: {ttform}')
+            return redirect(url_for('insert'))
         conn.commit()
         return redirect(url_for('update', movie_tt = ttform))
     return render_template('insert.html', page_title='Insert')
@@ -41,7 +46,7 @@ def update(movie_tt):
     if request.method == 'POST':
         action = request.form.get('submit')
         if action == 'delete':
-            curs.execute('''delete from movie where tt = %s''', [movie_tt])
+            curs.execute('''delete from movie where tt = %s''', movie_tt)
             conn.commit()
             return redirct(url_for('select'))
         elif action == 'update':
@@ -50,12 +55,16 @@ def update(movie_tt):
             releaseform = request.form.get('movie-release')
             directorform = request.form.get('movie-director')
             addedform = request.form.get('movie-addedby')
+            curs.execute('''select * from movie where tt = ttform''')
+            movie_amounts = curs.fetchall()
+            if movie_amounts != 0:
+                flash(f'There is an existing movie with that tt value of: {ttform}')
             curs.execute('''update movie set tt = %s, `release` = %s, director = %s, addedby = %s where tt = %s''', [ttform, titleform, releaseform, directorform, addedform, movie_tt])
             conn.commit()
             movie_tt = ttform
-            curs.execute('''select * from movie where tt = %s''', [movie_tt])
+            curs.execute('''select * from movie where tt = %s''', movie_tt)
             movie = curse.fetchone()
-    return render_template('update.html', movie = movie, page_title='Update')
+    return render_template('update.html', movie = movie_tt, page_title='Update')
 
 @app.route('/select/', methods = ['POST', 'GET'])
 def select():
