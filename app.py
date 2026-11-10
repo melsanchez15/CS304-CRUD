@@ -29,29 +29,33 @@ def insert():
         ttform = request.form.get('movie-tt')
         titleform = request.form.get('movie-title')
         releaseform = request.form.get('movie-release')
-        curs.execute('''INSERT INTO movie (tt, title, release) VALUES (%s, %s, %s)''',[ttform, titleform, releaseform])
+        curs.execute('''INSERT INTO movie (tt, title, `release`) VALUES (%s, %s, %s)''',[ttform, titleform, releaseform])
         conn.commit()
         return redirect(url_for('update', movie_tt = ttform))
     return render_template('insert.html', page_title='Insert')
 
 @app.route('/update/<movie_tt>', methods = ['POST','GET'])
-def update():
+def update(movie_tt):
     conn = dbi.connect()
     curs = dbi.dict_cursor(conn)
     if request.method == 'POST':
         action = request.form.get('submit')
         if action == 'delete':
-            curs.execute('''delete from movie where 'movie-tt' = %s''', [movie_tt])
+            curs.execute('''delete from movie where tt = %s''', [movie_tt])
             conn.commit()
+            return redirct(url_for('select'))
         elif action == 'update':
             ttform = request.form.get('movie-tt')
             titleform = request.form.get('movie-title')
             releaseform = request.form.get('movie-release')
             directorform = request.form.get('movie-director')
             addedform = request.form.get('movie-addedby')
-            curs.execute('''select * from movie where 'movie-tt' = %s''', [ttform])
-            movie = curs.fetchone()
-    return render_template('update.html', page_title='Search')
+            curs.execute('''update movie set tt = %s, `release` = %s, director = %s, addedby = %s where tt = %s''', [ttform, titleform, releaseform, directorform, addedform, movie_tt])
+            conn.commit()
+            movie_tt = ttform
+            curs.execute('''select * from movie where tt = %s''', [movie_tt])
+            movie = curse.fetchone()
+    return render_template('update.html', movie = movie, page_title='Update')
 
 @app.route('/select/', methods = ['POST', 'GET'])
 def select():
