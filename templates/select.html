@@ -3,16 +3,16 @@
 {% block main_content %}
 <h1>Select Movie</h1>
 
-<form method=GET action="{{url_for(select)}}">
-    <label for="menu-tt">Movies without release dates or directors:</label>
-    <select id="menu-tt" name="menu-tt">
-        <option value = 'none'>Choose One</option>
-        {%for movie in movies%}
-        <option value = "movie-tt" >{{movie['title']}}</option>
-        {%endfor%}
+<form method = "POST" action= "{{ url_for('select') }}">
+    <label for= "menu-tt" >Movies without release dates or directors:</label>
+    <select id= "menu-tt" name= "movie-tt">
+        <option value = "none" >Select Movie</option>
+        {% for movie in movies %}
+        <option value = "{{ movie.tt }}" >{{ movie.title }}</option>
+        {% endfor %}
     </select>
     <br>
-    <button type = 'submit'>Submit</button>
+    <button type = "submit" >Submit</button>
 </form>
 
 {% endblock %}

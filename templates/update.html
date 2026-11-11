@@ -5,24 +5,31 @@
 
 <p>Use "None" or "null" to set a field to null. Only Title, Release Year and Director can be null.</p>
 
-<form action = "/select/tt" method = "POST">
-    <label for = "movie-tt">Movie ID/TT: </label>
-    <input type = "text" id = "movie-tt" name = "movie-tt">
-    <br>
+<form method = "POST" action = "{{ url_for('update', movie_tt = movie.tt)}}">
+
     <label for = "movie-title">Movie Title: </label>
-    <input type = "text" id = "movie-title" name = "movie-title">
+    <input type = "text" id = "movie-title" name = "movie-title" value = "{{ movie.title or '' }}">
     <br>
+
+    <label for = "movie-tt">Movie ID/TT: </label>
+    <input type = "text" id = "movie-tt" name = "movie-tt"  value = "{{ movie.tt or '' }}">
+    <br>
+
     <label for = "movie-release">Movie Release Year: </label>
-    <input type = "text" id = "movie-release" name = "movie-release">
+    <input type = "text" id = "movie-release" name = "movie-release"  value = "{{ movie.release or '' }}">
     <br>
+
     <label for = "movie-director">Movie Director: </label>
-    <input type = "text" id = "movie-director" name = "movie-director">
+    <input type = "text" id = "movie-director" name = "movie-director"  value = "{{ movie.director or '' }}">
     <br>
+
     <label for = "movie-addedby">Movie Added By: </label>
-    <input type = "text" id = "movie-addedby" name = "movie-addedby">
+    <input type = "text" id = "movie-addedby" name = "movie-addedby"  value = "{{ movie.addedby or '' }}">
     <br>
-    <button type = 'submit'>Update</button>
-    <button type = 'submit'>Delete</button>
+
+    <button type = 'submit' name = 'submit' value = 'update'>Update Movie</button>
+    <button type = 'submit' name = 'submit' value = 'delete'>Delete Movie</button>
+
 </form>
 
 {% endblock %}
