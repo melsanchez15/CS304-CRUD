@@ -11,7 +11,7 @@ import cs304dbi as dbi
 app.secret_key = secrets.token_hex()
 
 # configure DBI
-dbi.conf('th116_db')
+dbi.conf('ms142_db')
 
 # For CRUD and Ajax, use your personal db
 
@@ -39,6 +39,7 @@ def insert():
         return redirect(url_for('update', movie_tt = ttform))
     return render_template('insert.html', page_title='Insert')
 
+#updates, allows for movie to be deleted and checks if the tt value is changed to an already existing value will flash message
 @app.route('/update/<movie_tt>', methods = ['POST','GET'])
 def update(movie_tt):
     conn = dbi.connect()
@@ -48,38 +49,49 @@ def update(movie_tt):
     if request.method == 'POST':
         action = request.form.get('submit')
 
+        #deletes
         if action == 'delete':
             curs.execute('''delete from movie where tt = %s''', [movie_tt])
             conn.commit()
-            return redirect(url_for('select'))
+            flash(f'{movie_tt} deleted!')
+            return redirect(url_for('index'))
         
+        #updates
         elif action == 'update':
             ttform = request.form.get('movie-tt')
             titleform = request.form.get('movie-title')
             releaseform = request.form.get('movie-release')
             directorform = request.form.get('movie-director')
             addedform = request.form.get('movie-addedby')
+            #since these values are ints, if the value was left '' it was trying to put in a string, so makes sure if empty its stores as NONE
+            if directorform == '':
+                directorform = None
+            if addedform == '':
+                addedform = None
 
+            #checks if there is already an existing tt value, flashes message if there is
             curs.execute('''select * from movie where tt = %s AND tt != %s''', [ttform, movie_tt])
             movie_amounts = curs.fetchall()
-
-            if movie_amounts != 0:
+            print(f'print {len(movie_amounts)}')
+            if len(movie_amounts) != 0:
                 flash(f'There is an existing movie with that tt value of: {ttform}')
-                return redirect(url_for('update, movie_tt = movie_tt'))
+                return redirect(url_for('update', movie_tt = movie_tt))
 
+            #flashes update message and should now update the db
             curs.execute('''
-            update movie set tt = %s, `release` = %s, director = %s, 
+            update movie set tt = %s, title = %s, `release` = %s, director = %s, 
             addedby = %s where tt = %s''', 
-            [ttform, titleform, releaseform, directorform, addedform])
-
+            [ttform, titleform, releaseform, directorform, addedform, movie_tt])
             conn.commit()
+            flash(f'{movie_tt} updated!')
             
     curs.execute('''select * from movie where tt = %s''', [movie_tt])
     movie = curs.fetchone()
-    print("Movie ID received:", movie_tt)
-    print("Movie retrieved:", movie)
+    #print("Movie ID received:", movie_tt)
+    #print("Movie retrieved:", movie)
     return render_template('update.html', movie = movie)
 
+#select from dropdown of movies with missing values, redirects to update page
 @app.route('/select/', methods = ['POST', 'GET'])
 def select():
     if request.method == 'POST':
