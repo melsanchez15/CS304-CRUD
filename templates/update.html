@@ -23,8 +23,13 @@
     <br>
 
     <label for = "movie-director">Movie Director: </label>
-    <input type = "text" id = "movie-director" name = "movie-director"  value = "{{ movie.director or '' }}">
+    <input type = "text" id = "movie-director" name = "movie-director"  value = "{{ movie.director or 'None' }}">
     <br>
+    <table>
+        <tr>
+            <td> Director Name: {{ dirname.get('name') or variable}}</td>
+        </tr>
+    </table>
 
     <label for = "movie-addedby">Movie Added By: </label>
     <input type = "text" id = "movie-addedby" name = "movie-addedby"  value = "{{ movie.addedby or '' }}">
