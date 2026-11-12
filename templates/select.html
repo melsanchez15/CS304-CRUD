@@ -8,14 +8,14 @@
 
 <form method = "POST" action= "{{ url_for('select') }}">
     <label for= "menu-tt" >Movies without release dates or directors:</label>
-    <select id= "menu-tt" name= "movie-tt">
+    <select id= "menu-tt" name= "menu-tt">
         <option value = "none" >Select Movie</option>
         {% for movie in movies %}
         <option value = "{{ movie.tt }}" >{{ movie.title }}</option>
         {% endfor %}
     </select>
     <br>
-    <button type = "submit" >Submit</button>
+    <input type = "submit" >Submit</input>
 </form>
 
 {% endblock %}

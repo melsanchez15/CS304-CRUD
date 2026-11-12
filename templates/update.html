@@ -22,8 +22,10 @@
     <br>
 
     <label for = "movie-tt">Movie ID/TT: </label>
-    <input type = "text" id = "movie-tt" 
-    name = "movie-tt"  value = "{{ movie.tt or '' }}">
+    {% if movie.tt is not none %}
+        <input type = "text" id = "movie-tt" 
+        name = "movie-tt"  value = "{{ movie.tt or '' }}">
+    {% endif %}
     <br>
 
     <label for = "movie-release">Movie Release Year: </label>
@@ -54,11 +56,11 @@
     name = "movie-addedby"  value = "{{ movie.addedby if movie.addedby is not none else '' }}">
     <br>
 
-    <button type = 'submit' name = 'submit' 
-    value = 'update'>Update Movie</button>
+    <input type = 'submit' value = 'submit' name = 'submit' 
+    value = 'update'>Update Movie</input>
 
-    <button type = 'submit' name = 'submit' 
-    value = 'delete'>Delete Movie</button>
+    <input type = 'submit' value = 'submit' name = 'submit' 
+    value = 'delete'>Delete Movie</input>
 
 </form>
 

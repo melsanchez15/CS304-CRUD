@@ -104,7 +104,7 @@ def update(movie_tt):
             movie_amounts = curs.fetchall()
             if len(movie_amounts) != 0:
                 flash(f'There is an existing movie with that tt value of: {ttform}')
-                return redirect(url_for('update', movie_tt = ttform))
+                return render_template('update.html', movie_tt = ttform)
 
             #flashes update message and should now update the db
             curs.execute('''
@@ -113,20 +113,31 @@ def update(movie_tt):
             [ttform, titleform, releaseform, directorform, addedform, movie_tt])
             conn.commit()
             flash(f'{movie_tt} updated!')
-            
-    curs.execute('''select * from movie where tt = %s''', [movie_tt])
-    movie = curs.fetchone()
 
-    curs.execute('''select name from person where nm = %s''', [movie['director']])
-    dirname = curs.fetchone()
+    try:       
+        curs.execute('''select * from movie where tt = %s''', [movie_tt])
+        movie = curs.fetchone()
+    except pymysql.err.IntegrityError as e:
+        flash(f'{movie_tt} not found in this database.')
+        return render_template('update.html', movie_tt = movie_tt)
 
+    if movie is None:
+        flash(f'Movie not found')
+        return render_template('select.html')
+
+    dirname = None 
+
+    if movie['director'] is not None:
+        curs.execute('''select name from person where nm = %s''', [movie['director']])
+        dirname = curs.fetchone()
+    
     return render_template('update.html', movie = movie, dirname = dirname)
 
 #select from dropdown of movies with missing values, redirects to update page
 @app.route('/select/', methods = ['POST', 'GET'])
 def select():
     if request.method == 'POST':
-        ttform = request.form.get('movie-tt')
+        ttform = request.form.get('menu-tt')
         return redirect(url_for('update', movie_tt = ttform))
     
     conn = dbi.connect()
