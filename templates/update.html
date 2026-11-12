@@ -1,42 +1,64 @@
 {% extends "base.html" %}
 
 {% block main_content %}
+
 <ul>
-<li><a href="{{url_for('index')}}">Home</a></li>
+    <li><a href="{{url_for('index')}}">Home</a></li>
 </ul>
+
 <h1>Update Movie</h1>
 
-<p>Use "None" or "null" to set a field to null. Only Title, Release Year and Director can be null.</p>
+<p>
+    Please use "None" or "Null" to set a field to null. 
+    Only the title, release year, or the director can be null.
+    Make sure to fill out the form fully before updating a movie.
+</p>
 
 <form method = "POST" action = "{{ url_for('update', movie_tt = movie.tt)}}">
 
     <label for = "movie-title">Movie Title: </label>
-    <input type = "text" id = "movie-title" name = "movie-title" value = "{{ movie.title or '' }}">
+    <input type = "text" id = "movie-title" 
+    name = "movie-title" value = "{{ movie.title or '' }}">
     <br>
 
     <label for = "movie-tt">Movie ID/TT: </label>
-    <input type = "text" id = "movie-tt" name = "movie-tt"  value = "{{ movie.tt or '' }}">
+    <input type = "text" id = "movie-tt" 
+    name = "movie-tt"  value = "{{ movie.tt or '' }}">
     <br>
 
     <label for = "movie-release">Movie Release Year: </label>
-    <input type = "text" id = "movie-release" name = "movie-release"  value = "{{ movie.release or '' }}">
+    <input type = "text" id = "movie-release" 
+    name = "movie-release"  value = "{{ movie.release or '' }}">
     <br>
 
     <label for = "movie-director">Movie Director: </label>
-    <input type = "text" id = "movie-director" name = "movie-director"  value = "{{ movie.director or 'None' }}">
+    <input type = "text" id = "movie-director" 
+    name = "movie-director"  value = "{{ movie.director or 'None' }}">
     <br>
+
     <table>
         <tr>
-            <td> Director Name: {{ dirname.get('name') or variable}}</td>
+            <td>
+                Director Name: 
+                {% if dirname is not none and dirname.get('name') is not none %}
+                    {{ dirname.get('name') }}
+                {% else %}
+                    None Specified
+                {% endif %}
+            </td>
         </tr>
     </table>
 
     <label for = "movie-addedby">Movie Added By: </label>
-    <input type = "text" id = "movie-addedby" name = "movie-addedby"  value = "{{ movie.addedby or '' }}">
+    <input type = "text" id = "movie-addedby" 
+    name = "movie-addedby"  value = "{{ movie.addedby if movie.addedby is not none else '' }}">
     <br>
 
-    <button type = 'submit' name = 'submit' value = 'update'>Update Movie</button>
-    <button type = 'submit' name = 'submit' value = 'delete'>Delete Movie</button>
+    <button type = 'submit' name = 'submit' 
+    value = 'update'>Update Movie</button>
+
+    <button type = 'submit' name = 'submit' 
+    value = 'delete'>Delete Movie</button>
 
 </form>
 

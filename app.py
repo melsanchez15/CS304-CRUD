@@ -11,7 +11,7 @@ import cs304dbi as dbi
 app.secret_key = secrets.token_hex()
 
 # configure DBI
-dbi.conf('ms142_db')
+dbi.conf('th116_db')
 staffid = 10090
 
 # For CRUD and Ajax, use your personal db
@@ -28,25 +28,30 @@ def index():
 def insert():
     conn = dbi.connect()
     curs = dbi.dict_cursor(conn)
+
     if request.method == 'POST':
         ttform = request.form.get('movie-tt')
         titleform = request.form.get('movie-title')
         releaseform = request.form.get('movie-release')
 
         #checks if any form values are empty, flashes message and redirects if it is
-        if ttform == '' or titleform == '' or releaseform == '':
-            flash('Form is incomplete!')
+        if not ttform or not titleform or not releaseform:
+            flash('Form is incomplete. Please fill out the form completely.')
             return redirect(url_for('insert'))
 
         #checks if theres an existing tt value
+       
         try:
-            curs.execute('''INSERT INTO movie (tt, title, `release`, addedby) VALUES (%s, %s, %s, %s)''',[ttform, titleform, releaseform, staffid])
+            curs.execute('''INSERT INTO movie (tt, title, `release`, addedby) 
+            VALUES (%s, %s, %s, %s)''',[ttform, titleform, releaseform, staffid])
+
         except pymysql.err.IntegrityError as err:
             flash(f'There is an existing movie with that tt value of: {ttform}')
             return redirect(url_for('insert'))
 
         conn.commit()
         return redirect(url_for('update', movie_tt = ttform))
+    
     return render_template('insert.html', page_title='Insert')
 
 #updates, allows for movie to be deleted and checks if the tt value is changed to an already existing value will flash message
@@ -71,37 +76,35 @@ def update(movie_tt):
             titleform = request.form.get('movie-title')
             releaseform = request.form.get('movie-release')
             directorform = request.form.get('movie-director')
-            print('person is', person)
-            if directorform in person:
-                curs.execute('''select name from person where nm = %s''', directorform)
-                dirname = curs.fetchone()
-                print(dirname)
-            else:
-                variable = "none specified"
+            directorform = request.form.get('movie-director')
             addedform = request.form.get('movie-addedby')
 
+#checks if any form values are empty, flashes message and redirects if it is
+            if not ttform or not titleform or not releaseform or not addedform:
+                if not ttform:
+                    flash('Please input a value for Movie ID/TT ')
+                if not titleform:
+                    flash('Please input a value for Movie Title')
+                if not releaseform:
+                    flash('Please input a value for Movie Release Year')
+                if not addedform:
+                    flash('Please input a value for Movie Added By')
+                
+                return redirect(url_for('update', movie_tt = movie_tt))
+            
+            curs.execute('''select name from person where nm = %s''', directorform)
+            dirname = curs.fetchall()
+            
             #since director id is int, if the value was left '' it was trying to put in a string, so makes sure if empty its stores as NONE
-            if directorform == '':
+            if directorform == '' or directorform.lower() in ('none', 'null'):
                 directorform = None
             
-            #checks if any form values are empty, flashes message and redirects if it is
-            if ttform == '' or titleform == '' or releaseform == '' or addedform == '':
-                if ttform == '':
-                    flash('Movie ID/TT missing')
-                if titleform == '':
-                    flash('Movie Title missing')
-                if releaseform == '':
-                    flash('Movie Release Year missing')
-                if addedform == '':
-                    flash('Movie Added By missing')
-                return redirect(url_for('update', movie_tt = movie_tt))
-
             #checks if there is already an existing tt value, flashes message if there is
             curs.execute('''select * from movie where tt = %s AND tt != %s''', [ttform, movie_tt])
             movie_amounts = curs.fetchall()
             if len(movie_amounts) != 0:
                 flash(f'There is an existing movie with that tt value of: {ttform}')
-                return redirect(url_for('update', movie_tt = movie_tt))
+                return redirect(url_for('update', movie_tt = ttform))
 
             #flashes update message and should now update the db
             curs.execute('''
@@ -113,12 +116,10 @@ def update(movie_tt):
             
     curs.execute('''select * from movie where tt = %s''', [movie_tt])
     movie = curs.fetchone()
-    directorform = request.form.get('movie-director')
-    curs.execute('''select name from person where nm = %s''', directorform)
-    dirname = curs.fetchall()
-    if dirname is None:
-        dirname == 'None Specified'
-        print(dirname)
+
+    curs.execute('''select name from person where nm = %s''', [movie['director']])
+    dirname = curs.fetchone()
+
     return render_template('update.html', movie = movie, dirname = dirname)
 
 #select from dropdown of movies with missing values, redirects to update page
@@ -127,10 +128,13 @@ def select():
     if request.method == 'POST':
         ttform = request.form.get('movie-tt')
         return redirect(url_for('update', movie_tt = ttform))
+    
     conn = dbi.connect()
     curs = dbi.dict_cursor(conn)
+
     curs.execute('''select * from movie where `release` IS NULL OR director IS NULL''')
     movies = curs.fetchall()
+
     return render_template('select.html', movies = movies)
 
 if __name__ == '__main__':

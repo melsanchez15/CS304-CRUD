@@ -4,7 +4,7 @@
     <meta charset='utf-8'>
     <!-- for mobile-friendly pages -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name=author content="">
+    <meta name= "Taniyah Hicks and Meleny Sanchez" content="CRUD Assignment">
     <title>{{ page_title }}</title>
     <link rel='stylesheet' href="{{url_for('static', filename = 'style.css')}}">
     {% block head_stuff %} {% endblock %}
@@ -21,13 +21,20 @@
 {% endwith %}
             
 {% block main_content %}
+
+<h1>Home</h1>
+
+<p>Welcome to the WMDB! Please insert a movie into the database and help 
+    fill out the incomplete movies that are inserted into the database. 
+    Please do the following using the links below:
+</p>
+<br>
+
 <ul>
-<li><a href="{{url_for('index')}}">Home</a></li>
 <li><a href="{{url_for('insert')}}">Insert A Movie</a></li>
 <li><a href="{{url_for('select')}}">Select from incomplete Movies</a></li>
 </ul>
 
-<h1>Home</h1>
 {% endblock %}
   
 </body>
